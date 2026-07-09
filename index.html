@@ -1,0 +1,515 @@
+import React, { useState } from 'react';
+import { 
+  TrendingUp, TrendingDown, Minus, Activity, Users, ShoppingBag, 
+  Building2, Ship, CreditCard, Factory, LineChart, AlertCircle, Info,
+  Sparkles, Bot, Send, Loader2
+} from 'lucide-react';
+
+// 💡 [데이터 수정 안내] 
+// 대시보드의 모든 수치는 아래 dashboardData 객체에서 수정할 수 있습니다.
+// 향후 월별 데이터가 발표될 때마다 이 부분의 값만 변경하면 화면에 자동으로 반영됩니다.
+const dashboardData = {
+  lastUpdated: "2026. 6. 30.",
+  
+  // 1. 핵심 KPI 지표
+  kpi: {
+    cpi: { value: "3.4", unit: "%", trend: "up", diff: "+0.1%p", desc: "전년동월대비 (6월)" },
+    employment: { value: "72.1", unit: "%", trend: "up", diff: "+1.7%p", desc: "고용률 (5월, 전국 1위)" },
+    ccsi: { value: "101.8", unit: "p", trend: "up", diff: "+7.3p", desc: "소비자심리지수 (5월)" },
+    cbsi: { value: "96.0", unit: "p", trend: "down", diff: "-7.2p", desc: "기업심리지수 (6월)" }
+  },
+
+  // 2. 심리지수 (소비자, 기업, 소상공인)
+  sentiment: {
+    ccsi: { current: 101.8, prev: 94.5 },
+    cbsi: { current: 96.0, prev: 103.2 },
+    cbsiMfg: { current: 96.9, prev: 95.4 },
+    cbsiNonMfg: { current: 96.0, prev: 103.5 },
+    smallBiz: { current: 61.1, forecast: 76.5, trend: "down", diff: "-0.6p" },
+    traditionalMarket: { current: 63.7, forecast: 79.4, trend: "down", diff: "-12.8p" }
+  },
+
+  // 3. 실물경제 (생산, 소비, 건설, 수출입)
+  realEconomy: {
+    retailSales: { value: "-9.6", unit: "%", trend: "down", desc: "대형소매점 판매 (5월)" },
+    production: { value: "-8.2", unit: "%", trend: "down", desc: "광공업 생산 (5월)" },
+    construction: { value: "+16.3", unit: "%", trend: "up", desc: "건축 허가면적 (1~5월)" },
+    exports: { value: "64.3", unit: "백만$", trend: "up", diff: "+219.9%", desc: "5월 수출액 (반도체 견인)" },
+    imports: { value: "136.8", unit: "백만$", trend: "up", diff: "+88.0%", desc: "5월 수입액" }
+  },
+
+  // 4. 금융 및 물가
+  finance: {
+    loans: { value: "+1,183", unit: "억", trend: "up", desc: "여신 증감 (4월)" },
+    deposits: { value: "+8,462", unit: "억", trend: "up", desc: "수신 증감 (4월)" },
+    delinquencyBank: { value: "1.16", unit: "%", trend: "up", diff: "+0.11%p", desc: "예금은행 연체율" },
+    delinquencyCorp: { value: "1.14", unit: "%", trend: "up", diff: "+0.17%p", desc: "기업대출 연체율" },
+    oilGasoline: { value: "1,953", unit: "원", desc: "최고가격제 (제주)" },
+    oilDiesel: { value: "1,942", unit: "원", desc: "최고가격제 (제주)" }
+  },
+
+  // 5. 관광 및 1차 산업
+  tourismPrimary: {
+    cruise: { calls: 146, pax: 334572, paxTrend: "+13.4%" },
+    beach: { visitors: 152687, trend: "+32.8%" },
+    cargo: { amount: 1068, unit: "만톤", trend: "down", diff: "-14%" },
+    agriculture: {
+      hanrabong: { price: "22,476", trend: "up", diff: "+13%", desc: "한라봉 3kg (6월)" },
+      radish: { price: "12,143", trend: "down", diff: "-30%", desc: "월동무 20kg (5월)" }
+    }
+  }
+};
+
+// 등락에 따른 색상 및 아이콘 반환 (한국은 통상적으로 빨간색 상승, 파란색 하락 사용)
+const getTrendVisuals = (trend) => {
+  if (trend === 'up') return { color: 'text-red-500', bg: 'bg-red-50', icon: <TrendingUp size={16} className="text-red-500" /> };
+  if (trend === 'down') return { color: 'text-blue-500', bg: 'bg-blue-50', icon: <TrendingDown size={16} className="text-blue-500" /> };
+  return { color: 'text-gray-500', bg: 'bg-gray-100', icon: <Minus size={16} className="text-gray-500" /> };
+};
+
+// 상단 핵심 KPI 카드 컴포넌트
+const KpiCard = ({ title, data, icon }) => {
+  const visuals = getTrendVisuals(data.trend);
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-gray-50 rounded-lg text-gray-600">{icon}</div>
+          <h3 className="text-gray-600 font-medium">{title}</h3>
+        </div>
+        <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${visuals.bg} ${visuals.color}`}>
+          {visuals.icon}
+          <span>{data.diff}</span>
+        </div>
+      </div>
+      <div>
+        <div className="text-3xl font-bold text-gray-800 mb-1">
+          {data.value} <span className="text-lg font-normal text-gray-500">{data.unit}</span>
+        </div>
+        <p className="text-sm text-gray-400">{data.desc}</p>
+      </div>
+    </div>
+  );
+};
+
+// 진행률 바 (Bar Chart) 컴포넌트
+const ProgressBar = ({ label, value, max = 200, isCenter = false }) => {
+  // 기준선(100)이 있는 지수형 차트
+  if (isCenter) {
+    const leftWidth = Math.min(100, (value / 100) * 50);
+    const rightWidth = Math.max(0, ((value - 100) / 100) * 50);
+    
+    return (
+      <div className="mb-4">
+        <div className="flex justify-between text-sm mb-1">
+          <span className="text-gray-700 font-medium">{label}</span>
+          <span className={`font-bold ${value >= 100 ? 'text-red-500' : 'text-blue-500'}`}>{value}</span>
+        </div>
+        <div className="relative w-full h-3 bg-gray-100 rounded-full overflow-hidden flex items-center">
+          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-400 z-10"></div>
+          {value >= 100 ? (
+            <>
+              <div className="h-full w-1/2 bg-blue-100 rounded-l-full"></div>
+              <div className="h-full bg-red-400 rounded-r-full" style={{ width: `${rightWidth}%` }}></div>
+            </>
+          ) : (
+            <>
+              <div className="h-full bg-blue-400 rounded-l-full ml-auto" style={{ width: `${100 - value}%`, maxWidth: '50%' }}></div>
+              <div className="h-full w-1/2 bg-red-100 rounded-r-full"></div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // 일반 비율 바 차트
+  const percentage = Math.min(100, (value / max) * 100);
+  return (
+    <div className="mb-4">
+      <div className="flex justify-between text-sm mb-1">
+        <span className="text-gray-700">{label}</span>
+        <span className="font-semibold text-gray-800">{value}</span>
+      </div>
+      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${percentage}%` }}></div>
+      </div>
+    </div>
+  );
+};
+
+export default function Dashboard() {
+  const [data] = useState(dashboardData);
+
+  const [aiBriefing, setAiBriefing] = useState("");
+  const [isBriefingLoading, setIsBriefingLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isChatLoading, setIsChatLoading] = useState(false);
+
+  const callGeminiAPI = async (userText, history = []) => {
+    const apiKey = ""; 
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+    const systemPrompt = "당신은 제주특별자치도의 수석 경제 분석가입니다. 제공된 경제 데이터를 분석하고 정책 입안자를 위한 통찰력을 제공하세요. 답변은 한국어로 명확하고 간결하게 작성하세요. Markdown 형식을 적절히 사용하여 가독성을 높여주세요.";
+    const dataContext = `\n\n[현재 대시보드 데이터 컨텍스트: ${JSON.stringify(data)}]`;
+
+    let contents = history.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+    }));
+
+    contents.push({
+        role: 'user',
+        parts: [{ text: userText + dataContext }]
+    });
+
+    const payload = {
+        contents: contents,
+        systemInstruction: {
+            parts: [{ text: systemPrompt }]
+        },
+    };
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+            return result.candidates[0].content.parts[0].text;
+        }
+        return "분석 결과를 생성하는 중 오류가 발생했습니다.";
+    } catch (error) {
+        console.error("Gemini API Error:", error);
+        return "네트워크 오류가 발생했습니다.";
+    }
+  };
+
+  const handleGenerateBriefing = async () => {
+    setIsBriefingLoading(true);
+    const prompt = "현재 제주 경제 상황을 요약하는 종합 브리핑을 작성해주세요. 긍정적인 지표와 부정적인 지표를 명확히 구분하고, 전반적인 실물경제 현황에 대한 종합적인 정책 제언을 포함하여 3~4개의 핵심 문단으로 정리해주세요.";
+    const response = await callGeminiAPI(prompt);
+    setAiBriefing(response);
+    setIsBriefingLoading(false);
+  };
+
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    if(!chatInput.trim()) return;
+    
+    const newHistory = [...chatHistory, { role: 'user', text: chatInput }];
+    setChatHistory(newHistory);
+    setChatInput("");
+    setIsChatLoading(true);
+
+    const response = await callGeminiAPI(chatInput, chatHistory);
+    
+    setChatHistory([...newHistory, { role: 'model', text: response }]);
+    setIsChatLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans text-gray-800">
+      
+      {/* Header Section */}
+      <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-3">
+            <LineChart className="text-indigo-600" size={32} />
+            민생경제 상황실 대시보드
+          </h1>
+          <p className="text-gray-500 mt-2 flex items-center gap-2">
+            <Info size={16} />
+            제공된 지표를 바탕으로 구성된 경제 모니터링 현황입니다.
+          </p>
+        </div>
+        <div className="flex flex-col items-end gap-3">
+          <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 text-sm font-medium text-gray-600">
+            기준일: {data.lastUpdated}
+          </div>
+          <button 
+            onClick={handleGenerateBriefing}
+            disabled={isBriefingLoading}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl shadow-sm hover:shadow transition-all duration-200 disabled:opacity-70 text-sm font-semibold"
+          >
+            {isBriefingLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+            AI 종합 브리핑 생성
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* AI Analysis Panel */}
+        {(aiBriefing || chatHistory.length > 0 || isBriefingLoading) && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {/* Briefing Area */}
+            <div className="lg:col-span-2 bg-gradient-to-br from-indigo-50 to-blue-50/30 rounded-2xl p-6 shadow-sm border border-indigo-100 relative overflow-hidden flex flex-col">
+              <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                <Sparkles size={120} />
+              </div>
+              <h2 className="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2 shrink-0">
+                <Sparkles size={20} className="text-indigo-600" />
+                AI 경제 상황 브리핑
+              </h2>
+              {isBriefingLoading ? (
+                 <div className="flex-1 flex flex-col items-center justify-center py-12 text-indigo-500">
+                   <Loader2 size={36} className="animate-spin mb-3" />
+                   <span className="font-medium animate-pulse">대시보드 데이터를 분석하고 있습니다...</span>
+                 </div>
+              ) : (
+                 <div className="prose prose-sm prose-indigo max-w-none text-gray-700 whitespace-pre-wrap overflow-y-auto flex-1 pr-2">
+                   {aiBriefing || "브리핑 생성 버튼을 클릭하여 AI 분석을 받아보세요."}
+                 </div>
+              )}
+            </div>
+
+            {/* Chat Area */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col h-[400px]">
+              <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 shrink-0">
+                <Bot size={20} className="text-gray-600" />
+                AI 경제 비서
+              </h2>
+              <div className="flex-1 overflow-y-auto mb-4 space-y-3 pr-2">
+                {chatHistory.length === 0 ? (
+                   <div className="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60">
+                      <Bot size={40} className="text-gray-400" />
+                      <p className="text-sm text-gray-500">
+                        현재 지표에 대해 궁금한 점을 질문해보세요.<br/><br/>예: "기업심리지수가 하락한 이유는 무엇으로 추정돼?"
+                      </p>
+                   </div>
+                ) : (
+                   chatHistory.map((msg, i) => (
+                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                       <div className={`max-w-[85%] p-3 text-sm leading-relaxed ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-2xl rounded-br-sm shadow-sm' : 'bg-gray-100 text-gray-800 rounded-2xl rounded-bl-sm border border-gray-200'}`}>
+                         {msg.text}
+                       </div>
+                     </div>
+                   ))
+                )}
+                {isChatLoading && (
+                   <div className="flex justify-start">
+                      <div className="bg-gray-100 p-3 rounded-2xl rounded-bl-sm text-sm text-gray-500 flex items-center gap-2 border border-gray-200">
+                         <Loader2 size={14} className="animate-spin text-indigo-500" /> 답변 작성 중...
+                      </div>
+                   </div>
+                )}
+              </div>
+              <form onSubmit={handleChatSubmit} className="flex gap-2 shrink-0 mt-auto">
+                <input 
+                  type="text" 
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="질문을 입력하세요..."
+                  className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-gray-50 hover:bg-white transition-colors"
+                />
+                <button 
+                  type="submit" 
+                  disabled={isChatLoading || !chatInput.trim()}
+                  className="bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 disabled:opacity-50 shadow-sm transition-colors flex items-center justify-center"
+                >
+                  <Send size={16} />
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* KPI Grid (Top 4 Cards) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <KpiCard title="소비자물가 (CPI)" data={data.kpi.cpi} icon={<ShoppingBag size={20} />} />
+          <KpiCard title="고용률" data={data.kpi.employment} icon={<Users size={20} />} />
+          <KpiCard title="소비자심리지수" data={data.kpi.ccsi} icon={<Activity size={20} />} />
+          <KpiCard title="기업심리지수" data={data.kpi.cbsi} icon={<Building2 size={20} />} />
+        </div>
+
+        {/* Detailed Sections Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Section 1: 체감 심리지수 */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <Activity className="text-indigo-500" size={20} />
+              주요 경제 심리지수 동향
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <p className="text-xs text-gray-400 mb-2 text-right">기준 100 (100 이상 긍정, 미만 부정)</p>
+                <ProgressBar label="소비자심리지수 (CCSI)" value={data.sentiment.ccsi.current} isCenter={true} />
+                <ProgressBar label="기업심리지수 (CBSI) 종합" value={data.sentiment.cbsi.current} isCenter={true} />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  <h4 className="text-sm font-semibold text-gray-600 mb-2">소상공인 체감 BSI</h4>
+                  <div className="flex items-end justify-between">
+                    <span className="text-2xl font-bold text-gray-800">{data.sentiment.smallBiz.current}</span>
+                    <span className="text-sm text-blue-500 flex items-center">{data.sentiment.smallBiz.diff}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">다음달 전망: {data.sentiment.smallBiz.forecast}</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  <h4 className="text-sm font-semibold text-gray-600 mb-2">전통시장 체감 BSI</h4>
+                  <div className="flex items-end justify-between">
+                    <span className="text-2xl font-bold text-gray-800">{data.sentiment.traditionalMarket.current}</span>
+                    <span className="text-sm text-blue-500 flex items-center">{data.sentiment.traditionalMarket.diff}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">다음달 전망: {data.sentiment.traditionalMarket.forecast}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: 실물 경제 및 산업동향 */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <Factory className="text-emerald-500" size={20} />
+              실물경제 및 수출입 동향
+            </h2>
+            
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {[
+                { label: "대형소매점 판매", data: data.realEconomy.retailSales },
+                { label: "광공업 생산", data: data.realEconomy.production },
+                { label: "건축 허가면적", data: data.realEconomy.construction }
+              ].map((item, idx) => {
+                const vis = getTrendVisuals(item.data.trend);
+                return (
+                  <div key={idx} className="bg-gray-50 rounded-xl p-4 text-center flex flex-col justify-center items-center">
+                    <span className="text-xs text-gray-500 mb-1 break-keep">{item.label}</span>
+                    <div className={`text-lg font-bold ${vis.color}`}>{item.data.value}{item.data.unit}</div>
+                  </div>
+                )
+              })}
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+              <h3 className="text-sm font-bold text-gray-700 mb-4">5월 월간 수출입 현황 (단위: 백만$)</h3>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-600 font-medium">수출액 (반도체 90.6% 차지)</span>
+                    <span className="text-red-500 font-bold">{data.realEconomy.exports.value} <span className="text-xs font-normal">({data.realEconomy.exports.diff})</span></span>
+                  </div>
+                  <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-red-400 rounded-full" style={{ width: '45%' }}></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-600 font-medium">수입액</span>
+                    <span className="text-blue-500 font-bold">{data.realEconomy.imports.value} <span className="text-xs font-normal">({data.realEconomy.imports.diff})</span></span>
+                  </div>
+                  <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-400 rounded-full" style={{ width: '85%' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: 금융 및 물가 */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <CreditCard className="text-amber-500" size={20} />
+              금융기관 동향 및 에너지
+            </h2>
+            
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="border border-gray-100 bg-white p-4 rounded-xl shadow-sm">
+                <p className="text-sm text-gray-500">여신 (대출) 증감액</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-2xl font-bold text-gray-800">{data.finance.loans.value}</span>
+                  <span className="text-gray-500">{data.finance.loans.unit}</span>
+                </div>
+              </div>
+              <div className="border border-gray-100 bg-white p-4 rounded-xl shadow-sm">
+                <p className="text-sm text-gray-500">수신 (예금) 증감액</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-2xl font-bold text-gray-800">{data.finance.deposits.value}</span>
+                  <span className="text-gray-500">{data.finance.deposits.unit}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg text-red-700">
+                <div className="flex items-center gap-2">
+                  <AlertCircle size={16} />
+                  <span className="text-sm font-semibold">예금은행 연체율 상승</span>
+                </div>
+                <span className="font-bold">{data.finance.delinquencyBank.value}% <span className="text-xs font-normal opacity-80">({data.finance.delinquencyBank.diff})</span></span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <span className="text-sm text-gray-600">휘발유 최고가격 (제주도)</span>
+                <span className="font-bold text-gray-800">{data.finance.oilGasoline.value}원/ℓ</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <span className="text-sm text-gray-600">경유 최고가격 (제주도)</span>
+                <span className="font-bold text-gray-800">{data.finance.oilDiesel.value}원/ℓ</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 4: 관광 및 1차 산업 */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <Ship className="text-cyan-500" size={20} />
+              관광·항만 및 1차 산업
+            </h2>
+
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 border border-gray-100 rounded-xl">
+                <div className="w-12 h-12 bg-cyan-50 text-cyan-600 rounded-full flex items-center justify-center shrink-0">
+                  <Ship size={24} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm text-gray-500">크루즈 입항 현황 (누적)</h4>
+                  <div className="flex items-end justify-between mt-1">
+                    <span className="text-xl font-bold text-gray-800">{data.tourismPrimary.cruise.calls}회 / {data.tourismPrimary.cruise.pax.toLocaleString()}명</span>
+                    <span className="text-sm text-red-500 font-medium">{data.tourismPrimary.cruise.paxTrend}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 p-4 border border-gray-100 rounded-xl">
+                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+                  <Users size={24} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm text-gray-500">해수욕장 방문객 누적</h4>
+                  <div className="flex items-end justify-between mt-1">
+                    <span className="text-xl font-bold text-gray-800">{data.tourismPrimary.beach.visitors.toLocaleString()}명</span>
+                    <span className="text-sm text-red-500 font-medium">{data.tourismPrimary.beach.trend}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                  <p className="text-xs text-gray-500 mb-1">{data.tourismPrimary.agriculture.hanrabong.desc}</p>
+                  <p className="text-lg font-bold text-gray-800">
+                    {data.tourismPrimary.agriculture.hanrabong.price}원
+                    <span className="text-xs ml-2 text-red-500">{data.tourismPrimary.agriculture.hanrabong.diff}</span>
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                  <p className="text-xs text-gray-500 mb-1">{data.tourismPrimary.agriculture.radish.desc}</p>
+                  <p className="text-lg font-bold text-gray-800">
+                    {data.tourismPrimary.agriculture.radish.price}원
+                    <span className="text-xs ml-2 text-blue-500">{data.tourismPrimary.agriculture.radish.diff}</span>
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
