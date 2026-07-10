@@ -30,14 +30,14 @@
         // 대시보드의 모든 수치는 아래 dashboardData 객체에서 수정할 수 있습니다.
         // 향후 월별 데이터가 발표될 때마다 이 부분의 값만 변경하면 화면에 자동으로 반영됩니다.
         const dashboardData = {
-            lastUpdated: "2025. 6. 30.",
+            lastUpdated: "2026. 5. 31.",
             
             // 1. 핵심 KPI 지표
             kpi: {
-                cpi: { value: "3.4", unit: "%", trend: "up", diff: "+0.1%p", desc: "전년동월대비 ('25년 6월)" },
-                employment: { value: "72.1", unit: "%", trend: "up", diff: "+1.7%p", desc: "고용률 ('25년 5월, 전국 1위)" },
-                ccsi: { value: "101.8", unit: "p", trend: "up", diff: "+7.3p", desc: "소비자심리지수 ('25년 5월)" },
-                cbsi: { value: "96.0", unit: "p", trend: "down", diff: "-7.2p", desc: "기업심리지수 ('25년 6월)" }
+                cpi: { value: "3.4", unit: "%", trend: "up", diff: "+0.1%p", desc: "전년동월대비 ('26년 6월)" },
+                employment: { value: "72.1", unit: "%", trend: "up", diff: "+1.7%p", desc: "고용률 ('26년 5월, 전국 1위)" },
+                ccsi: { value: "101.8", unit: "p", trend: "up", diff: "+7.3p", desc: "소비자심리지수 ('26년 5월)" },
+                cbsi: { value: "96.0", unit: "p", trend: "down", diff: "-7.2p", desc: "기업심리지수 ('26년 6월)" }
             },
 
             // 2. 심리지수 (소비자, 기업, 소상공인)
@@ -50,23 +50,29 @@
                 traditionalMarket: { current: 63.7, forecast: 79.4, trend: "down", diff: "-12.8p" }
             },
 
-            // 3. 실물경제 (생산, 소비, 건설, 수출입)
+            // 3. 실물경제 (생산, 소비, 수출입)
             realEconomy: {
-                retailSales: { value: "-9.6", unit: "%", trend: "down", desc: "대형소매점 판매 ('25년 5월)" },
-                production: { value: "-8.2", unit: "%", trend: "down", desc: "광공업 생산 ('25년 5월)" },
-                construction: { value: "+16.3", unit: "%", trend: "up", desc: "건축 허가면적 ('25년 1~5월)" },
-                exports: { value: "64.3", unit: "백만$", trend: "up", diff: "+219.9%", desc: "'25년 5월 수출액 (반도체 견인)" },
-                imports: { value: "136.8", unit: "백만$", trend: "up", diff: "+88.0%", desc: "'25년 5월 수입액" }
+                retailSales: { value: "-9.6", unit: "%", trend: "down", desc: "대형소매점 판매 ('26년 5월)" },
+                production: { value: "-8.2", unit: "%", trend: "down", desc: "광공업 생산 ('26년 5월)" },
+                exports: { value: "64.3", unit: "백만$", trend: "up", diff: "+219.9%", desc: "'26년 5월 수출액 (반도체 견인)" },
+                imports: { value: "136.8", unit: "백만$", trend: "up", diff: "+88.0%", desc: "'26년 5월 수입액" }
+            },
+            
+            // 3-1. 건설경기 (수주, 인허가, 착공, 미분양)
+            constructionData: {
+                 orders: { value: "3,140", unit: "억", trend: "up", diff: "+66%", desc: "건설수주액 ('26년 5월말 누계)" },
+                 permits: { value: "400,694", unit: "㎡", trend: "up", diff: "+16.3%", desc: "건축허가면적 ('26년 5월말 누계)" },
+                 unsold: { value: "2,804", unit: "호", trend: "up", diff: "+104호", desc: "미분양주택 ('26년 5월말 기준)" }
             },
 
             // 4. 금융 및 물가
             finance: {
-                loans: { value: "+1,183", unit: "억", trend: "up", desc: "여신 증감 ('25년 4월)" },
-                deposits: { value: "+8,462", unit: "억", trend: "up", desc: "수신 증감 ('25년 4월)" },
-                delinquencyBank: { value: "1.16", unit: "%", trend: "up", diff: "+0.11%p", desc: "예금은행 연체율 ('25년 4월)" },
-                delinquencyCorp: { value: "1.14", unit: "%", trend: "up", diff: "+0.17%p", desc: "기업대출 연체율 ('25년 4월)" },
-                oilGasoline: { value: "1,953", unit: "원", desc: "최고가격제 (제주도, '25년)" },
-                oilDiesel: { value: "1,942", unit: "원", desc: "최고가격제 (제주도, '25년)" }
+                loans: { value: "+1,183", unit: "억", trend: "up", desc: "여신 증감 ('26년 4월)" },
+                deposits: { value: "+8,462", unit: "억", trend: "up", desc: "수신 증감 ('26년 4월)" },
+                delinquencyBank: { value: "1.16", unit: "%", trend: "up", diff: "+0.11%p", desc: "예금은행 연체율 ('26년 4월)" },
+                delinquencyCorp: { value: "1.14", unit: "%", trend: "up", diff: "+0.17%p", desc: "기업대출 연체율 ('26년 4월)" },
+                oilGasoline: { value: "1,953", unit: "원", desc: "최고가격제 (제주도, '26년)" },
+                oilDiesel: { value: "1,942", unit: "원", desc: "최고가격제 (제주도, '26년)" }
             },
 
             // 5. 관광 및 1차 산업
@@ -75,8 +81,8 @@
                 beach: { visitors: 152687, trend: "+32.8%" },
                 cargo: { amount: 1068, unit: "만톤", trend: "down", diff: "-14%" },
                 agriculture: {
-                hanrabong: { price: "22,476", trend: "up", diff: "+13%", desc: "한라봉 3kg ('25년 6월)" },
-                radish: { price: "12,143", trend: "down", diff: "-30%", desc: "월동무 20kg ('25년 5월)" }
+                hanrabong: { price: "22,476", trend: "up", diff: "+13%", desc: "한라봉 3kg ('26년 6월)" },
+                radish: { price: "12,143", trend: "down", diff: "-30%", desc: "월동무 20kg ('26년 5월)" }
                 }
             }
         };
@@ -216,15 +222,17 @@
                 setTimeout(() => {
                     let reply = "죄송합니다. 현재 제공된 데이터 내에서는 해당 질문에 대한 정확한 답변을 드리기 어렵습니다.";
                     if (message.includes('연체') || message.includes('금융')) {
-                        reply = `현재 ('25년 4월 기준) 예금은행 연체율은 ${dashboardData.finance.delinquencyBank.value}%로 전월 대비 ${dashboardData.finance.delinquencyBank.diff} 상승했으며, 기업대출 연체율도 ${dashboardData.finance.delinquencyCorp.value}%로 상승세입니다. 금리 인상 누적 효과로 분석됩니다.`;
+                        reply = `현재 ('26년 4월 기준) 예금은행 연체율은 ${dashboardData.finance.delinquencyBank.value}%로 전월 대비 ${dashboardData.finance.delinquencyBank.diff} 상승했으며, 기업대출 연체율도 ${dashboardData.finance.delinquencyCorp.value}%로 상승세입니다. 금리 인상 누적 효과로 분석됩니다.`;
                     } else if (message.includes('수출') || message.includes('반도체')) {
-                        reply = `'25년 5월 수출액은 ${dashboardData.realEconomy.exports.value}백만 달러로 전년동월대비 ${dashboardData.realEconomy.exports.diff} 급증했습니다. 이는 반도체 수출(전체 비중의 90.6% 차지)이 크게 증가한 것이 주된 견인차 역할을 했습니다.`;
+                        reply = `'26년 5월 수출액은 ${dashboardData.realEconomy.exports.value}백만 달러로 전년동월대비 ${dashboardData.realEconomy.exports.diff} 급증했습니다. 이는 반도체 수출(전체 비중의 90.6% 차지)이 크게 증가한 것이 주된 견인차 역할을 했습니다.`;
                     } else if (message.includes('물가') || message.includes('휘발유')) {
                         reply = `소비자물가지수(CPI) 상승률은 ${dashboardData.kpi.cpi.value}%입니다. 최고가격제가 시행 중인 휘발유는 ℓ당 ${dashboardData.finance.oilGasoline.value}원, 경유는 ${dashboardData.finance.oilDiesel.value}원을 기록하고 있습니다.`;
                     } else if (message.includes('소상공인') || message.includes('심리')) {
                         reply = `소비자심리지수(CCSI)는 ${dashboardData.kpi.ccsi.value}p로 긍정적이나, 소상공인 체감 BSI는 ${dashboardData.sentiment.smallBiz.current}p, 전통시장 체감 BSI는 ${dashboardData.sentiment.traditionalMarket.current}p로 크게 하락하여 체감경기 부진이 뚜렷합니다.`;
                     } else if (message.includes('관광') || message.includes('크루즈') || message.includes('해수욕장')) {
                          reply = `관광 지표는 호조세입니다. 크루즈 입항은 ${dashboardData.tourismPrimary.cruise.calls}회(${dashboardData.tourismPrimary.cruise.paxTrend}), 해수욕장 방문객은 ${dashboardData.tourismPrimary.beach.visitors.toLocaleString()}명(${dashboardData.tourismPrimary.beach.trend})으로 크게 증가했습니다.`;
+                    } else if (message.includes('건설') || message.includes('미분양')) {
+                         reply = `건설 지표의 경우, 건설수주액은 전년 대비 ${dashboardData.constructionData.orders.diff} 증가한 ${dashboardData.constructionData.orders.value}억원, 건축허가면적은 ${dashboardData.constructionData.permits.diff} 증가한 ${dashboardData.constructionData.permits.value}㎡를 기록했습니다. 미분양 주택은 ${dashboardData.constructionData.unsold.value}호로 다소 증가했습니다.`;
                     }
 
                     chatHistory.innerHTML += `
@@ -395,14 +403,14 @@
                 </h2>
                 
                 <div class="space-y-6">
-                    <!-- 생산/소비/건설 요약 -->
-                    <div class="grid grid-cols-3 gap-3" id="realEconSum">
+                    <!-- 생산/소비/수출입 요약 -->
+                    <div class="grid grid-cols-2 gap-3" id="realEconSum">
                         <!-- 자바스크립트로 렌더링 -->
                     </div>
 
                     <!-- 수출입 현황 차트 흉내 -->
                     <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
-                        <h3 class="text-sm font-bold text-gray-700 mb-4">'25년 5월 월간 수출입 현황 (단위: 백만$)</h3>
+                        <h3 class="text-sm font-bold text-gray-700 mb-4">'26년 5월 월간 수출입 현황 (단위: 백만$)</h3>
                         <div class="space-y-4" id="exportImportDiv">
                             <!-- 자바스크립트로 렌더링 -->
                         </div>
@@ -414,11 +422,10 @@
                 function renderRealEconomy() {
                     const data = dashboardData.realEconomy;
                     
-                    // 상단 3개 박스
+                    // 상단 2개 박스
                     const items = [
                         { title: "대형소매점 판매", data: data.retailSales },
-                        { title: "광공업 생산", data: data.production },
-                        { title: "건축 허가면적", data: data.construction }
+                        { title: "광공업 생산", data: data.production }
                     ];
                     
                     let html = '';
@@ -467,7 +474,66 @@
                     }, 100);
                 }
             </script>
+        </div>
 
+        <!-- 건설경기 섹션 추가 -->
+        <div class="mt-6 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+             <h2 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                 <i data-lucide="hard-hat" class="w-5 h-5 text-orange-500"></i>
+                 건설경기 동향
+             </h2>
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="constructionBoxes">
+                 <!-- 자바스크립트로 렌더링 -->
+             </div>
+        </div>
+
+        <script>
+            function renderConstruction() {
+                const data = dashboardData.constructionData;
+                
+                document.getElementById('constructionBoxes').innerHTML = `
+                    <div class="p-4 border border-gray-100 rounded-xl bg-gray-50 flex items-center gap-4">
+                         <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center shrink-0">
+                            <i data-lucide="file-signature" class="w-5 h-5"></i>
+                         </div>
+                         <div>
+                             <h4 class="text-sm text-gray-500 mb-1">건설수주액</h4>
+                             <div class="flex items-end justify-between w-full">
+                                <p class="text-xl font-bold text-gray-800">${data.orders.value} <span class="text-sm font-normal text-gray-500">억</span></p>
+                                <span class="ml-2 text-xs font-semibold ${getTrendColor(data.orders.trend)} bg-white px-1.5 py-0.5 rounded shadow-sm">${data.orders.diff}</span>
+                             </div>
+                         </div>
+                    </div>
+                    <div class="p-4 border border-gray-100 rounded-xl bg-gray-50 flex items-center gap-4">
+                         <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center shrink-0">
+                            <i data-lucide="building" class="w-5 h-5"></i>
+                         </div>
+                         <div>
+                             <h4 class="text-sm text-gray-500 mb-1">건축허가면적</h4>
+                             <div class="flex items-end justify-between w-full">
+                                <p class="text-xl font-bold text-gray-800">${data.permits.value} <span class="text-sm font-normal text-gray-500">㎡</span></p>
+                                <span class="ml-2 text-xs font-semibold ${getTrendColor(data.permits.trend)} bg-white px-1.5 py-0.5 rounded shadow-sm">${data.permits.diff}</span>
+                             </div>
+                         </div>
+                    </div>
+                    <div class="p-4 border border-red-100 rounded-xl bg-red-50 flex items-center gap-4 relative overflow-hidden">
+                         <div class="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center shrink-0 z-10">
+                            <i data-lucide="home" class="w-5 h-5"></i>
+                         </div>
+                         <div class="z-10">
+                             <h4 class="text-sm text-red-800 font-medium mb-1">미분양주택</h4>
+                             <div class="flex items-end justify-between w-full">
+                                <p class="text-xl font-bold text-red-900">${data.unsold.value} <span class="text-sm font-normal text-red-700">호</span></p>
+                                <span class="ml-2 text-xs font-semibold text-red-600 bg-white px-1.5 py-0.5 rounded shadow-sm">${data.unsold.diff}</span>
+                             </div>
+                         </div>
+                    </div>
+                `;
+            }
+        </script>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            
             <!-- 왼쪽 컬럼 두번째: 금융기관 -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <h2 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
@@ -601,6 +667,7 @@
             renderKpiCards();
             renderSentiment();
             renderRealEconomy();
+            renderConstruction();
             renderFinance();
             renderTourism();
 
