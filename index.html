@@ -62,14 +62,14 @@
                 }
             },
             
-            // 4. 건설경기 동향
+            // 4. 건설경기 동향 (Table 방식 데이터로 개편)
             constructionData: {
-                 orders: { value: "3,140", unit: "억", trend: "up", diff: "+66%", desc: "건설수주액 누계" },
-                 permits: { value: "400,694", unit: "㎡", trend: "up", diff: "+16.3%", desc: "건축허가면적 누계" },
-                 unsold: { 
-                    value: "2,804", unit: "호", trend: "up", diff: "+104호", desc: "미분양주택 현황",
-                    history: [2500, 2571, 2680, 2700, 2804, 2850]
-                 }
+                 metrics: [
+                     { name: "건설수주액", unit: "억원", data: ["413", "650", "780", "794", "503"] },
+                     { name: "건축착공면적", unit: "천㎡", data: ["50", "60", "57", "123", "34"] },
+                     { name: "미분양주택", unit: "호", data: ["2,571", "2,680", "2,696", "2,700", "2,804"] },
+                     { name: "주택매매가격", unit: "전월대비(%)", data: ["0.0", "-0.1", "-0.1", "-0.1", "-0.2"] }
+                 ]
             },
 
             // 5. 금융 및 물가
@@ -246,34 +246,36 @@
                 </div>
             </div>
 
-            <!-- 3. 건설경기 동향 (Trend Chart) -->
+            <!-- 3. 건설경기 종합 동향 (Table) -->
             <div class="glass-card rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
                     <div class="p-1.5 bg-orange-100 rounded-lg"><i data-lucide="hard-hat" class="w-5 h-5 text-orange-600"></i></div>
-                    건설경기 및 미분양 동향
+                    건설경기 종합 동향
                 </h2>
-                <div class="relative h-48 w-full mb-4">
-                    <canvas id="constructionChart"></canvas>
+                
+                <div class="overflow-x-auto mt-2">
+                    <table class="w-full text-sm text-right whitespace-nowrap">
+                        <thead class="bg-slate-50 text-slate-500 font-medium border-y border-slate-200">
+                            <tr>
+                                <th class="py-2.5 px-3 text-left">주요 지표</th>
+                                <th class="py-2.5 px-3">1월</th>
+                                <th class="py-2.5 px-3">2월</th>
+                                <th class="py-2.5 px-3">3월</th>
+                                <th class="py-2.5 px-3">4월</th>
+                                <th class="py-2.5 px-3 text-slate-800 font-bold bg-orange-50/50">5월(최근)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="constructionTableBody">
+                            <!-- JS를 통해 렌더링됩니다 -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="grid grid-cols-2 gap-4 mt-2">
-                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-orange-500">
-                            <i data-lucide="file-signature" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 font-medium">건설수주액 누계</p>
-                            <p class="text-lg font-bold text-slate-800"><span id="val-orders"></span><span class="text-xs font-normal text-slate-500 ml-1">억원</span></p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-orange-500">
-                            <i data-lucide="building" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 font-medium">건축허가면적 누계</p>
-                            <p class="text-lg font-bold text-slate-800"><span id="val-permits"></span><span class="text-xs font-normal text-slate-500 ml-1">㎡</span></p>
-                        </div>
-                    </div>
+                
+                <div class="mt-4 bg-orange-50/50 p-3.5 rounded-xl border border-orange-100 flex items-start gap-2.5">
+                    <i data-lucide="info" class="w-5 h-5 text-orange-500 mt-0.5 shrink-0"></i>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        <strong class="text-slate-800">미분양 2,800호 돌파:</strong> 민간 건설수주는 다소 회복세를 보이나, 미분양 주택 누적 및 매매가격 하락세가 지속되며 건설경기 하방 압력으로 작용 중입니다.
+                    </p>
                 </div>
             </div>
 
@@ -390,9 +392,30 @@
             bindText('val-retail', dashboardData.realEconomy.retailSales.value + dashboardData.realEconomy.retailSales.unit);
             bindTrend('trend-retail', dashboardData.realEconomy.retailSales.trend, '');
 
-            // 3. 건설경기
-            bindText('val-orders', dashboardData.constructionData.orders.value);
-            bindText('val-permits', dashboardData.constructionData.permits.value);
+            // 3. 건설경기 (표 데이터 바인딩)
+            const constTbody = document.getElementById('constructionTableBody');
+            if (constTbody) {
+                let constHtml = '';
+                dashboardData.constructionData.metrics.forEach((item, index) => {
+                    const isWarning = item.name === '미분양주택'; // 미분양 항목은 색상 강조
+                    const textColor = isWarning ? 'text-red-500 font-bold' : 'text-slate-600';
+                    
+                    constHtml += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-3 px-3 text-left font-semibold text-slate-700 flex flex-col">
+                                <span>${item.name}</span>
+                                <span class="text-[10px] text-slate-400 font-normal">${item.unit}</span>
+                            </td>
+                            <td class="py-3 px-3 ${textColor}">${item.data[0]}</td>
+                            <td class="py-3 px-3 ${textColor}">${item.data[1]}</td>
+                            <td class="py-3 px-3 ${textColor}">${item.data[2]}</td>
+                            <td class="py-3 px-3 ${textColor}">${item.data[3]}</td>
+                            <td class="py-3 px-3 font-bold bg-orange-50/30 ${isWarning ? 'text-red-600' : 'text-slate-800'}">${item.data[4]}</td>
+                        </tr>
+                    `;
+                });
+                constTbody.innerHTML = constHtml;
+            }
 
             // 4. 금융 및 물가
             bindText('val-delinquency', dashboardData.finance.delinquencyBank.value);
@@ -447,27 +470,7 @@
                 }
             });
 
-            // 2. 건설 미분양 차트 (Line with fill)
-            const ctxConst = document.getElementById('constructionChart').getContext('2d');
-            let constGradient = ctxConst.createLinearGradient(0, 0, 0, 200);
-            constGradient.addColorStop(0, 'rgba(249, 115, 22, 0.2)');
-            constGradient.addColorStop(1, 'rgba(249, 115, 22, 0)');
-            new Chart(ctxConst, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '미분양주택 (호)', data: dashboardData.constructionData.unsold.history,
-                        borderColor: '#f97316', backgroundColor: constGradient,
-                        borderWidth: 2, tension: 0.3, fill: true, pointBackgroundColor: '#fff', pointBorderColor: '#f97316', pointRadius: 4,
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { grid: { color: '#f1f5f9' }, min: 2000, max: 3200 }, x: { grid: { display: false } } }
-                }
-            });
+            // (참고: 건설 미분양 차트는 데이터 표 형식으로 대체되어 삭제됨)
 
             // 3. 수출입 실물경제 차트 (Bar)
             const ctxExport = document.getElementById('exportImportChart').getContext('2d');
