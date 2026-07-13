@@ -198,40 +198,63 @@
                     <div class="p-1.5 bg-indigo-100 rounded-lg"><i data-lucide="activity" class="w-5 h-5 text-indigo-600"></i></div>
                     소비 및 기업 심리지수 동향
                 </h2>
-                
                 <div class="relative h-56 w-full mb-4">
                     <canvas id="sentimentChart"></canvas>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4 mt-2">
                     <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
                         <h4 class="text-sm font-semibold text-slate-500 mb-1">소상공인 체감 BSI</h4>
                         <div class="flex items-end justify-between">
-                            <span class="text-2xl font-bold text-slate-800">${dashboardData.sentiment.smallBiz.current}</span>
-                            <span class="text-sm font-bold text-blue-500">${dashboardData.sentiment.smallBiz.diff}</span>
+                            <span class="text-2xl font-bold text-slate-800" id="val-smallBiz"></span>
+                            <span id="trend-smallBiz"></span>
                         </div>
                     </div>
                     <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
                         <h4 class="text-sm font-semibold text-slate-500 mb-1">전통시장 체감 BSI</h4>
                         <div class="flex items-end justify-between">
-                            <span class="text-2xl font-bold text-slate-800">${dashboardData.sentiment.traditionalMarket.current}</span>
-                            <span class="text-sm font-bold text-blue-500">${dashboardData.sentiment.traditionalMarket.diff}</span>
+                            <span class="text-2xl font-bold text-slate-800" id="val-tradMarket"></span>
+                            <span id="trend-tradMarket"></span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 2. 건설경기 동향 (Trend Chart) -->
+            <!-- 2. 실물경제 (수출입) 동향 (Bar Chart) -->
+            <div class="glass-card rounded-2xl p-6">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <div class="p-1.5 bg-emerald-100 rounded-lg"><i data-lucide="ship" class="w-5 h-5 text-emerald-600"></i></div>
+                    수출입 실물경제 동향 (단위: 백만$)
+                </h2>
+                <div class="relative h-56 w-full mb-4">
+                    <canvas id="exportImportChart"></canvas>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-2">
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex justify-between items-center">
+                        <span class="text-sm font-semibold text-slate-500">광공업 생산</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg font-bold text-slate-800" id="val-production"></span>
+                            <span class="text-sm" id="trend-production"></span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex justify-between items-center">
+                        <span class="text-sm font-semibold text-slate-500">대형소매점 판매</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg font-bold text-slate-800" id="val-retail"></span>
+                            <span class="text-sm" id="trend-retail"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 건설경기 동향 (Trend Chart) -->
             <div class="glass-card rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
                     <div class="p-1.5 bg-orange-100 rounded-lg"><i data-lucide="hard-hat" class="w-5 h-5 text-orange-600"></i></div>
                     건설경기 및 미분양 동향
                 </h2>
-                
                 <div class="relative h-48 w-full mb-4">
                     <canvas id="constructionChart"></canvas>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4 mt-2">
                     <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
                         <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-orange-500">
@@ -239,7 +262,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-500 font-medium">건설수주액 누계</p>
-                            <p class="text-lg font-bold text-slate-800">${dashboardData.constructionData.orders.value}<span class="text-xs font-normal text-slate-500 ml-1">억원</span></p>
+                            <p class="text-lg font-bold text-slate-800"><span id="val-orders"></span><span class="text-xs font-normal text-slate-500 ml-1">억원</span></p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -248,81 +271,90 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-500 font-medium">건축허가면적 누계</p>
-                            <p class="text-lg font-bold text-slate-800">${dashboardData.constructionData.permits.value}<span class="text-xs font-normal text-slate-500 ml-1">㎡</span></p>
+                            <p class="text-lg font-bold text-slate-800"><span id="val-permits"></span><span class="text-xs font-normal text-slate-500 ml-1">㎡</span></p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. 수출입 동향 (Bar Chart) -->
+            <!-- 4. 금융 및 물가 동향 -->
             <div class="glass-card rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <div class="p-1.5 bg-emerald-100 rounded-lg"><i data-lucide="ship" class="w-5 h-5 text-emerald-600"></i></div>
-                    수출입 실물경제 동향 (단위: 백만$)
+                    <div class="p-1.5 bg-rose-100 rounded-lg"><i data-lucide="credit-card" class="w-5 h-5 text-rose-600"></i></div>
+                    금융 및 물가 동향
                 </h2>
-                <div class="relative h-56 w-full">
-                    <canvas id="exportImportChart"></canvas>
-                </div>
-                <div class="grid grid-cols-2 gap-3 mt-4">
-                    <div class="text-center p-2 bg-slate-50 rounded-lg">
-                        <p class="text-xs text-slate-500 mb-1">광공업 생산</p>
-                        <p class="text-base font-bold text-blue-500">-8.2%</p>
+                <div class="flex items-center gap-4 mb-4 bg-rose-50/50 p-4 rounded-xl border border-rose-100">
+                    <div class="w-1/3">
+                        <p class="text-sm text-slate-600 font-bold mb-1">예금은행 연체율</p>
+                        <p class="text-3xl font-black text-rose-600"><span id="val-delinquency"></span><span class="text-sm font-normal text-slate-400 ml-1">%</span></p>
+                        <p class="mt-1" id="trend-delinquency"></p>
                     </div>
-                    <div class="text-center p-2 bg-slate-50 rounded-lg">
-                        <p class="text-xs text-slate-500 mb-1">대형소매점 판매</p>
-                        <p class="text-base font-bold text-blue-500">-9.6%</p>
+                    <div class="w-2/3 h-20 relative">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+                        <span class="text-sm font-semibold text-slate-600 flex items-center gap-2"><i data-lucide="arrow-up-circle" class="w-4 h-4 text-slate-400"></i> 여신 증감 ('26년 4월)</span>
+                        <span class="font-bold text-red-500"><span id="val-loans"></span>억원</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+                        <span class="text-sm font-semibold text-slate-600 flex items-center gap-2"><i data-lucide="arrow-down-circle" class="w-4 h-4 text-slate-400"></i> 수신 증감 ('26년 4월)</span>
+                        <span class="font-bold text-red-500"><span id="val-deposits"></span>억원</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+                        <span class="text-sm font-semibold text-slate-600 flex items-center gap-2"><i data-lucide="fuel" class="w-4 h-4 text-slate-400"></i> 휘발유 최고가 (제주)</span>
+                        <span class="font-bold text-slate-800"><span id="val-oil"></span>원/ℓ</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 4. 관광 및 금융 복합 -->
-            <div class="glass-card rounded-2xl p-6 flex flex-col gap-6">
-                
-                <!-- 관광 동향 -->
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                        <div class="p-1.5 bg-cyan-100 rounded-lg"><i data-lucide="plane-landing" class="w-5 h-5 text-cyan-600"></i></div>
-                        주요 관광 동향
-                    </h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="p-4 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-cyan-100 relative overflow-hidden">
-                            <i data-lucide="anchor" class="absolute -right-2 -bottom-2 w-16 h-16 text-cyan-500 opacity-10"></i>
-                            <h4 class="text-sm font-semibold text-cyan-800 mb-1">크루즈 입항객 누적</h4>
-                            <div class="flex items-end justify-between relative z-10">
-                                <span class="text-2xl font-black text-slate-800">${dashboardData.tourismPrimary.cruise.pax.toLocaleString()}</span>
-                                <span class="text-sm font-bold text-red-500">${dashboardData.tourismPrimary.cruise.paxTrend}</span>
-                            </div>
+            <!-- 5. 관광 및 1차 산업 동향 -->
+            <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <div class="p-1.5 bg-cyan-100 rounded-lg"><i data-lucide="plane-landing" class="w-5 h-5 text-cyan-600"></i></div>
+                    관광 및 1차 산업 동향
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- 크루즈 -->
+                    <div class="p-4 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-cyan-100 relative overflow-hidden">
+                        <i data-lucide="anchor" class="absolute -right-2 -bottom-2 w-16 h-16 text-cyan-500 opacity-10"></i>
+                        <h4 class="text-sm font-semibold text-cyan-800 mb-1">크루즈 입항객 누적</h4>
+                        <div class="flex items-end justify-between relative z-10 mt-2">
+                            <span class="text-2xl font-black text-slate-800" id="val-cruise"></span>
+                            <span id="trend-cruise"></span>
                         </div>
-                        <div class="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100 relative overflow-hidden">
-                            <i data-lucide="sun" class="absolute -right-2 -bottom-2 w-16 h-16 text-purple-500 opacity-10"></i>
-                            <h4 class="text-sm font-semibold text-purple-800 mb-1">해수욕장 방문객 누적</h4>
-                            <div class="flex items-end justify-between relative z-10">
-                                <span class="text-2xl font-black text-slate-800">${dashboardData.tourismPrimary.beach.visitors.toLocaleString()}</span>
-                                <span class="text-sm font-bold text-red-500">${dashboardData.tourismPrimary.beach.trend}</span>
-                            </div>
+                    </div>
+                    <!-- 해수욕장 -->
+                    <div class="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100 relative overflow-hidden">
+                        <i data-lucide="sun" class="absolute -right-2 -bottom-2 w-16 h-16 text-purple-500 opacity-10"></i>
+                        <h4 class="text-sm font-semibold text-purple-800 mb-1">해수욕장 방문객 누적</h4>
+                        <div class="flex items-end justify-between relative z-10 mt-2">
+                            <span class="text-2xl font-black text-slate-800" id="val-beach"></span>
+                            <span id="trend-beach"></span>
+                        </div>
+                    </div>
+                    <!-- 한라봉 -->
+                    <div class="p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-100 relative overflow-hidden">
+                        <i data-lucide="citrus" class="absolute -right-2 -bottom-2 w-16 h-16 text-orange-500 opacity-10"></i>
+                        <h4 class="text-sm font-semibold text-orange-800 mb-1">한라봉 3kg 가격</h4>
+                        <div class="flex items-end justify-between relative z-10 mt-2">
+                            <span class="text-2xl font-black text-slate-800"><span id="val-hanrabong"></span><span class="text-sm font-normal text-slate-500">원</span></span>
+                            <span id="trend-hanrabong"></span>
+                        </div>
+                    </div>
+                    <!-- 월동무 -->
+                    <div class="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100 relative overflow-hidden">
+                        <i data-lucide="leaf" class="absolute -right-2 -bottom-2 w-16 h-16 text-green-500 opacity-10"></i>
+                        <h4 class="text-sm font-semibold text-green-800 mb-1">월동무 20kg 가격</h4>
+                        <div class="flex items-end justify-between relative z-10 mt-2">
+                            <span class="text-2xl font-black text-slate-800"><span id="val-radish"></span><span class="text-sm font-normal text-slate-500">원</span></span>
+                            <span id="trend-radish"></span>
                         </div>
                     </div>
                 </div>
-
-                <!-- 금융 동향 (Sparkline) -->
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                        <div class="p-1.5 bg-rose-100 rounded-lg"><i data-lucide="credit-card" class="w-5 h-5 text-rose-600"></i></div>
-                        금융 연체율 동향 (%)
-                    </h2>
-                    <div class="flex items-center gap-4">
-                        <div class="w-1/3">
-                            <p class="text-sm text-slate-500 font-medium mb-1">예금은행 연체율</p>
-                            <p class="text-3xl font-black text-rose-600">${dashboardData.finance.delinquencyBank.value}<span class="text-sm font-normal text-slate-400 ml-1">%</span></p>
-                            <p class="text-xs font-bold text-rose-500 mt-1">${dashboardData.finance.delinquencyBank.diff}</p>
-                        </div>
-                        <div class="w-2/3 h-20 relative">
-                            <canvas id="financeChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
             </div>
+
         </div>
     </div>
 
@@ -330,12 +362,61 @@
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('lastUpdated').textContent = dashboardData.lastUpdated;
             renderKpiCards();
+            
+            // 데이터 바인딩 헬퍼 함수
+            const bindText = (id, text) => { 
+                const el = document.getElementById(id);
+                if(el) el.textContent = text; 
+            };
+            
+            const bindTrend = (id, trend, diff) => { 
+                const el = document.getElementById(id);
+                if(el) {
+                    el.innerHTML = getArrowIcon(trend, 14) + ' ' + diff;
+                    const baseClass = "text-sm font-bold flex items-center gap-1";
+                    el.className = `${baseClass} ${getTrendColor(trend)}`;
+                }
+            };
+
+            // 1. 소상공인 & 전통시장
+            bindText('val-smallBiz', dashboardData.sentiment.smallBiz.current);
+            bindTrend('trend-smallBiz', dashboardData.sentiment.smallBiz.trend, dashboardData.sentiment.smallBiz.diff);
+            bindText('val-tradMarket', dashboardData.sentiment.traditionalMarket.current);
+            bindTrend('trend-tradMarket', dashboardData.sentiment.traditionalMarket.trend, dashboardData.sentiment.traditionalMarket.diff);
+            
+            // 2. 실물경제
+            bindText('val-production', dashboardData.realEconomy.production.value + dashboardData.realEconomy.production.unit);
+            bindTrend('trend-production', dashboardData.realEconomy.production.trend, ''); // 값 자체에 %가 포함되어 있으므로 diff란은 아이콘만 표시
+            bindText('val-retail', dashboardData.realEconomy.retailSales.value + dashboardData.realEconomy.retailSales.unit);
+            bindTrend('trend-retail', dashboardData.realEconomy.retailSales.trend, '');
+
+            // 3. 건설경기
+            bindText('val-orders', dashboardData.constructionData.orders.value);
+            bindText('val-permits', dashboardData.constructionData.permits.value);
+
+            // 4. 금융 및 물가
+            bindText('val-delinquency', dashboardData.finance.delinquencyBank.value);
+            bindTrend('trend-delinquency', dashboardData.finance.delinquencyBank.trend, dashboardData.finance.delinquencyBank.diff);
+            bindText('val-loans', dashboardData.finance.loans.value);
+            bindText('val-deposits', dashboardData.finance.deposits.value);
+            bindText('val-oil', dashboardData.finance.oilGasoline.value);
+
+            // 5. 관광 및 1차산업
+            bindText('val-cruise', dashboardData.tourismPrimary.cruise.pax.toLocaleString());
+            bindTrend('trend-cruise', 'up', dashboardData.tourismPrimary.cruise.paxTrend);
+            bindText('val-beach', dashboardData.tourismPrimary.beach.visitors.toLocaleString());
+            bindTrend('trend-beach', 'up', dashboardData.tourismPrimary.beach.trend);
+            bindText('val-hanrabong', dashboardData.tourismPrimary.agriculture.hanrabong.price);
+            bindTrend('trend-hanrabong', dashboardData.tourismPrimary.agriculture.hanrabong.trend, dashboardData.tourismPrimary.agriculture.hanrabong.diff);
+            bindText('val-radish', dashboardData.tourismPrimary.agriculture.radish.price);
+            bindTrend('trend-radish', dashboardData.tourismPrimary.agriculture.radish.trend, dashboardData.tourismPrimary.agriculture.radish.diff);
+
+            // 아이콘 렌더링 재실행 (새로 추가된 DOM 대응)
             lucide.createIcons();
 
-            // 공통 차트 옵션
+            // ================== 차트 렌더링 ==================
             Chart.defaults.font.family = "'Pretendard', sans-serif";
             Chart.defaults.color = '#64748b';
-            
             const labels = dashboardData.labels;
 
             // 1. 심리지수 차트 (Line)
@@ -346,75 +427,45 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: '소비자심리지수 (CCSI)',
+                            label: '소비자심리지수(CCSI)',
                             data: dashboardData.sentiment.ccsi.history,
-                            borderColor: '#ef4444', // red-500
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 3,
+                            borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2, tension: 0.4, fill: true, pointRadius: 3,
                         },
                         {
-                            label: '기업심리지수 (CBSI)',
+                            label: '기업심리지수(CBSI)',
                             data: dashboardData.sentiment.cbsi.history,
-                            borderColor: '#3b82f6', // blue-500
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            borderDash: [5, 5],
-                            pointRadius: 3,
+                            borderColor: '#3b82f6', backgroundColor: 'transparent',
+                            borderWidth: 2, tension: 0.4, borderDash: [5, 5], pointRadius: 3,
                         }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
-                        tooltip: { mode: 'index', intersect: false }
-                    },
-                    scales: {
-                        y: { 
-                            min: 80, max: 120,
-                            grid: { color: '#f1f5f9', drawBorder: false }
-                        },
-                        x: { grid: { display: false, drawBorder: false } }
-                    }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
+                    scales: { y: { min: 80, max: 120, grid: { color: '#f1f5f9', drawBorder: false } }, x: { grid: { display: false } } }
                 }
             });
 
             // 2. 건설 미분양 차트 (Line with fill)
             const ctxConst = document.getElementById('constructionChart').getContext('2d');
             let constGradient = ctxConst.createLinearGradient(0, 0, 0, 200);
-            constGradient.addColorStop(0, 'rgba(249, 115, 22, 0.2)'); // orange
+            constGradient.addColorStop(0, 'rgba(249, 115, 22, 0.2)');
             constGradient.addColorStop(1, 'rgba(249, 115, 22, 0)');
-
             new Chart(ctxConst, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: '미분양주택 (호)',
-                        data: dashboardData.constructionData.unsold.history,
-                        borderColor: '#f97316',
-                        backgroundColor: constGradient,
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#f97316',
-                        pointRadius: 4,
+                        label: '미분양주택 (호)', data: dashboardData.constructionData.unsold.history,
+                        borderColor: '#f97316', backgroundColor: constGradient,
+                        borderWidth: 2, tension: 0.3, fill: true, pointBackgroundColor: '#fff', pointBorderColor: '#f97316', pointRadius: 4,
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-                    scales: {
-                        y: { grid: { color: '#f1f5f9' }, min: 2000, max: 3200 },
-                        x: { grid: { display: false } }
-                    }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { grid: { color: '#f1f5f9' }, min: 2000, max: 3200 }, x: { grid: { display: false } } }
                 }
             });
 
@@ -425,28 +476,14 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        {
-                            label: '수출액',
-                            data: dashboardData.realEconomy.exports.history,
-                            backgroundColor: '#ef4444',
-                            borderRadius: 4,
-                        },
-                        {
-                            label: '수입액',
-                            data: dashboardData.realEconomy.imports.history,
-                            backgroundColor: '#3b82f6',
-                            borderRadius: 4,
-                        }
+                        { label: '수출액', data: dashboardData.realEconomy.exports.history, backgroundColor: '#ef4444', borderRadius: 4 },
+                        { label: '수입액', data: dashboardData.realEconomy.imports.history, backgroundColor: '#3b82f6', borderRadius: 4 }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
-                    scales: {
-                        y: { grid: { color: '#f1f5f9' } },
-                        x: { grid: { display: false } }
-                    }
+                    scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
                 }
             });
 
@@ -458,20 +495,13 @@
                     labels: labels,
                     datasets: [{
                         data: dashboardData.finance.delinquencyBank.history,
-                        borderColor: '#e11d48', // rose-600
-                        borderWidth: 2,
-                        tension: 0.4,
-                        pointRadius: 0, // Hide points for sparkline look
+                        borderColor: '#e11d48', borderWidth: 2, tension: 0.4, pointRadius: 0,
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                    scales: {
-                        y: { display: false, min: 0.9, max: 1.3 }, // Hide y axis
-                        x: { display: false } // Hide x axis
-                    },
+                    scales: { y: { display: false, min: 0.9, max: 1.3 }, x: { display: false } },
                     layout: { padding: 5 }
                 }
             });
