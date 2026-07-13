@@ -81,7 +81,8 @@
                     value: "1.16", unit: "%", trend: "up", diff: "+0.11%p", desc: "예금은행 연체율",
                     history: [1.01, 1.05, 0.97, 1.14, 1.16, 1.20] 
                 },
-                oilGasoline: { value: "1,953", unit: "원", desc: "최고가격제 (제주도)" }
+                oilGasoline: { value: "1,953", unit: "원", trend: "down", diff: "-1.3원", desc: "최고가격제 (제주도)" },
+                oilLPG: { value: "1,020", unit: "원", trend: "down", diff: "-5.0원", desc: "차량용 LPG 평균" }
             },
 
             // 6. 관광 및 1차 산업
@@ -106,7 +107,7 @@
         }
     </script>
 
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="w-full max-w-[1600px] px-4 md:px-8 mx-auto space-y-6">
         
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-200 pb-4">
             <div>
@@ -191,7 +192,7 @@
             }
         </script>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
             
             <!-- 1. 소비/심리 동향 (Trend Chart) -->
             <div class="glass-card rounded-2xl p-6">
@@ -199,7 +200,7 @@
                     <div class="p-1.5 bg-indigo-100 rounded-lg"><i data-lucide="activity" class="w-5 h-5 text-indigo-600"></i></div>
                     소비 및 기업 심리지수 동향
                 </h2>
-                <div class="relative h-56 w-full mb-4">
+                <div class="relative h-52 w-full mb-4">
                     <canvas id="sentimentChart"></canvas>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mt-2">
@@ -220,13 +221,13 @@
                 </div>
             </div>
 
-            <!-- 2. 1차 산업 출하 동향 (Dual Axis Chart - 수출입 대체) -->
+            <!-- 2. 1차 산업 출하 동향 (Dual Axis Chart) -->
             <div class="glass-card rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
                     <div class="p-1.5 bg-emerald-100 rounded-lg"><i data-lucide="tractor" class="w-5 h-5 text-emerald-600"></i></div>
                     1차 산업 출하 동향 (농산물 및 축산물)
                 </h2>
-                <div class="relative h-56 w-full mb-4">
+                <div class="relative h-52 w-full mb-4">
                     <canvas id="primaryIndustryChart"></canvas>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mt-2">
@@ -305,36 +306,32 @@
                         <span class="text-sm font-semibold text-slate-600 flex items-center gap-2"><i data-lucide="arrow-down-circle" class="w-4 h-4 text-slate-400"></i> 수신 증감 ('26년 4월)</span>
                         <span class="font-bold text-red-500"><span id="val-deposits"></span>억원</span>
                     </div>
-                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <span class="text-sm font-semibold text-slate-600 flex items-center gap-2"><i data-lucide="fuel" class="w-4 h-4 text-slate-400"></i> 휘발유 최고가 (제주)</span>
-                        <span class="font-bold text-slate-800"><span id="val-oil"></span>원/ℓ</span>
-                    </div>
                 </div>
             </div>
 
-            <!-- 5. 관광 및 1차 산업 동향 -->
-            <div class="glass-card rounded-2xl p-6 lg:col-span-2">
+            <!-- 5. 주요 생활물가 및 1차 산업 동향 -->
+            <div class="glass-card rounded-2xl p-6 xl:col-span-2">
                 <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <div class="p-1.5 bg-cyan-100 rounded-lg"><i data-lucide="plane-landing" class="w-5 h-5 text-cyan-600"></i></div>
-                    관광 및 1차 산업 동향
+                    <div class="p-1.5 bg-cyan-100 rounded-lg"><i data-lucide="shopping-cart" class="w-5 h-5 text-cyan-600"></i></div>
+                    주요 생활물가 및 농산물 가격 동향
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- 크루즈 -->
-                    <div class="p-4 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-cyan-100 relative overflow-hidden">
-                        <i data-lucide="anchor" class="absolute -right-2 -bottom-2 w-16 h-16 text-cyan-500 opacity-10"></i>
-                        <h4 class="text-sm font-semibold text-cyan-800 mb-1">크루즈 입항객 누적</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <!-- 휘발유 -->
+                    <div class="p-4 bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl border border-slate-200 relative overflow-hidden">
+                        <i data-lucide="fuel" class="absolute -right-2 -bottom-2 w-16 h-16 text-slate-300 opacity-20"></i>
+                        <h4 class="text-sm font-semibold text-slate-700 mb-1">휘발유 최고가 (제주)</h4>
                         <div class="flex items-end justify-between relative z-10 mt-2">
-                            <span class="text-2xl font-black text-slate-800" id="val-cruise"></span>
-                            <span id="trend-cruise"></span>
+                            <span class="text-2xl font-black text-slate-800"><span id="val-gasoline"></span><span class="text-sm font-normal text-slate-500">원</span></span>
+                            <span id="trend-gasoline"></span>
                         </div>
                     </div>
-                    <!-- 해수욕장 -->
-                    <div class="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100 relative overflow-hidden">
-                        <i data-lucide="sun" class="absolute -right-2 -bottom-2 w-16 h-16 text-purple-500 opacity-10"></i>
-                        <h4 class="text-sm font-semibold text-purple-800 mb-1">해수욕장 방문객 누적</h4>
+                    <!-- LPG -->
+                    <div class="p-4 bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl border border-slate-200 relative overflow-hidden">
+                        <i data-lucide="flame" class="absolute -right-2 -bottom-2 w-16 h-16 text-slate-300 opacity-20"></i>
+                        <h4 class="text-sm font-semibold text-slate-700 mb-1">차량용 LPG 평균가</h4>
                         <div class="flex items-end justify-between relative z-10 mt-2">
-                            <span class="text-2xl font-black text-slate-800" id="val-beach"></span>
-                            <span id="trend-beach"></span>
+                            <span class="text-2xl font-black text-slate-800"><span id="val-lpg"></span><span class="text-sm font-normal text-slate-500">원</span></span>
+                            <span id="trend-lpg"></span>
                         </div>
                     </div>
                     <!-- 한라봉 -->
@@ -423,13 +420,12 @@
             bindTrend('trend-delinquency', dashboardData.finance.delinquencyBank.trend, dashboardData.finance.delinquencyBank.diff);
             bindText('val-loans', dashboardData.finance.loans.value);
             bindText('val-deposits', dashboardData.finance.deposits.value);
-            bindText('val-oil', dashboardData.finance.oilGasoline.value);
 
-            // 5. 관광 및 1차산업
-            bindText('val-cruise', dashboardData.tourismPrimary.cruise.pax.toLocaleString());
-            bindTrend('trend-cruise', 'up', dashboardData.tourismPrimary.cruise.paxTrend);
-            bindText('val-beach', dashboardData.tourismPrimary.beach.visitors.toLocaleString());
-            bindTrend('trend-beach', 'up', dashboardData.tourismPrimary.beach.trend);
+            // 5. 생활물가 및 1차산업 (크루즈, 해수욕장 제거 및 휘발유, LPG 추가)
+            bindText('val-gasoline', dashboardData.finance.oilGasoline.value);
+            bindTrend('trend-gasoline', dashboardData.finance.oilGasoline.trend, dashboardData.finance.oilGasoline.diff);
+            bindText('val-lpg', dashboardData.finance.oilLPG.value);
+            bindTrend('trend-lpg', dashboardData.finance.oilLPG.trend, dashboardData.finance.oilLPG.diff);
             bindText('val-hanrabong', dashboardData.tourismPrimary.agriculture.hanrabong.price);
             bindTrend('trend-hanrabong', dashboardData.tourismPrimary.agriculture.hanrabong.trend, dashboardData.tourismPrimary.agriculture.hanrabong.diff);
             bindText('val-radish', dashboardData.tourismPrimary.agriculture.radish.price);
