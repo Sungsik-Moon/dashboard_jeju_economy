@@ -52,13 +52,14 @@
             realEconomy: {
                 retailSales: { value: "-9.6", unit: "%", trend: "down", desc: "대형소매점 판매 ('26년 5월)" },
                 production: { value: "-8.2", unit: "%", trend: "down", desc: "광공업 생산 ('26년 5월)" },
-                exports: { 
-                    current: "64.3", unit: "백만$", trend: "up", diff: "+219.9%", desc: "'26년 5월 수출액",
-                    history: [37.0, 31.5, 46.5, 81.8, 64.3, 65.0] // 가상 시계열
+                // 수출입 데이터 대신 1차 산업 출하 데이터로 교체
+                agriShipment: { 
+                    current: "320", unit: "억원", trend: "up", diff: "+5.5%", desc: "'26년 5월 농산물",
+                    history: [450, 420, 380, 280, 320, 350] // 가상 시계열 데이터
                 },
-                imports: { 
-                    current: "136.8", unit: "백만$", trend: "up", diff: "+88.0%", desc: "'26년 5월 수입액",
-                    history: [80.5, 74.4, 95.6, 120.3, 136.8, 130.0] // 가상 시계열
+                liveShipment: { 
+                    current: "1,200", unit: "톤", trend: "down", diff: "-10.1%", desc: "'26년 5월 축산물",
+                    history: [1200, 1150, 1300, 1350, 1200, 1100] // 가상 시계열 데이터
                 }
             },
             
@@ -219,28 +220,28 @@
                 </div>
             </div>
 
-            <!-- 2. 실물경제 (수출입) 동향 (Bar Chart) -->
+            <!-- 2. 1차 산업 출하 동향 (Dual Axis Chart - 수출입 대체) -->
             <div class="glass-card rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <div class="p-1.5 bg-emerald-100 rounded-lg"><i data-lucide="ship" class="w-5 h-5 text-emerald-600"></i></div>
-                    수출입 실물경제 동향 (단위: 백만$)
+                    <div class="p-1.5 bg-emerald-100 rounded-lg"><i data-lucide="tractor" class="w-5 h-5 text-emerald-600"></i></div>
+                    1차 산업 출하 동향 (농산물 및 축산물)
                 </h2>
                 <div class="relative h-56 w-full mb-4">
-                    <canvas id="exportImportChart"></canvas>
+                    <canvas id="primaryIndustryChart"></canvas>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mt-2">
-                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex justify-between items-center">
-                        <span class="text-sm font-semibold text-slate-500">광공업 생산</span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg font-bold text-slate-800" id="val-production"></span>
-                            <span class="text-sm" id="trend-production"></span>
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
+                        <span class="text-sm font-semibold text-slate-500 mb-1">농산물 출하액</span>
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-bold text-slate-800" id="val-agriShipment"></span>
+                            <span class="text-sm" id="trend-agriShipment"></span>
                         </div>
                     </div>
-                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex justify-between items-center">
-                        <span class="text-sm font-semibold text-slate-500">대형소매점 판매</span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg font-bold text-slate-800" id="val-retail"></span>
-                            <span class="text-sm" id="trend-retail"></span>
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-col justify-center">
+                        <span class="text-sm font-semibold text-slate-500 mb-1">축산물 출하량</span>
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-bold text-slate-800" id="val-liveShipment"></span>
+                            <span class="text-sm" id="trend-liveShipment"></span>
                         </div>
                     </div>
                 </div>
@@ -386,11 +387,11 @@
             bindText('val-tradMarket', dashboardData.sentiment.traditionalMarket.current);
             bindTrend('trend-tradMarket', dashboardData.sentiment.traditionalMarket.trend, dashboardData.sentiment.traditionalMarket.diff);
             
-            // 2. 실물경제
-            bindText('val-production', dashboardData.realEconomy.production.value + dashboardData.realEconomy.production.unit);
-            bindTrend('trend-production', dashboardData.realEconomy.production.trend, ''); // 값 자체에 %가 포함되어 있으므로 diff란은 아이콘만 표시
-            bindText('val-retail', dashboardData.realEconomy.retailSales.value + dashboardData.realEconomy.retailSales.unit);
-            bindTrend('trend-retail', dashboardData.realEconomy.retailSales.trend, '');
+            // 2. 1차 산업 실물경제 바인딩 (기존 수출입 및 생산 지표 대체)
+            bindText('val-agriShipment', dashboardData.realEconomy.agriShipment.current + dashboardData.realEconomy.agriShipment.unit);
+            bindTrend('trend-agriShipment', dashboardData.realEconomy.agriShipment.trend, dashboardData.realEconomy.agriShipment.diff);
+            bindText('val-liveShipment', dashboardData.realEconomy.liveShipment.current + dashboardData.realEconomy.liveShipment.unit);
+            bindTrend('trend-liveShipment', dashboardData.realEconomy.liveShipment.trend, dashboardData.realEconomy.liveShipment.diff);
 
             // 3. 건설경기 (표 데이터 바인딩)
             const constTbody = document.getElementById('constructionTableBody');
@@ -470,23 +471,53 @@
                 }
             });
 
-            // (참고: 건설 미분양 차트는 데이터 표 형식으로 대체되어 삭제됨)
-
-            // 3. 수출입 실물경제 차트 (Bar)
-            const ctxExport = document.getElementById('exportImportChart').getContext('2d');
-            new Chart(ctxExport, {
+            // 3. 1차 산업 출하 동향 차트 (Dual Axis: Bar & Line)
+            const ctxPrimary = document.getElementById('primaryIndustryChart').getContext('2d');
+            new Chart(ctxPrimary, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: '수출액', data: dashboardData.realEconomy.exports.history, backgroundColor: '#ef4444', borderRadius: 4 },
-                        { label: '수입액', data: dashboardData.realEconomy.imports.history, backgroundColor: '#3b82f6', borderRadius: 4 }
+                        { 
+                            label: '농산물 출하액 (억원)', 
+                            data: dashboardData.realEconomy.agriShipment.history, 
+                            backgroundColor: '#10b981', // emerald-500
+                            borderRadius: 4,
+                            yAxisID: 'y'
+                        },
+                        { 
+                            label: '축산물 출하량 (톤)', 
+                            data: dashboardData.realEconomy.liveShipment.history, 
+                            type: 'line',
+                            borderColor: '#f59e0b', // amber-500
+                            backgroundColor: 'transparent',
+                            borderWidth: 2, 
+                            pointRadius: 4,
+                            pointBackgroundColor: '#f59e0b',
+                            yAxisID: 'y1'
+                        }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } },
-                    scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
+                    scales: { 
+                        y: { 
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: '출하액(억원)', font: { size: 10 } },
+                            grid: { color: '#f1f5f9' } 
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: '출하량(톤)', font: { size: 10 } },
+                            grid: { drawOnChartArea: false } // 우측 축의 그리드라인 제거하여 깔끔하게 표출
+                        },
+                        x: { grid: { display: false } } 
+                    }
                 }
             });
 
